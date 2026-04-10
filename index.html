@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💳 信用卡繳費總覽</title>
+<style>
+  body { font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 16px; background: #f5f5f5; }
+  h1 { font-size: 1.3rem; text-align: center; margin-bottom: 16px; }
+  .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; }
+  .card-name { font-size: 1.1rem; font-weight: bold; }
+  .status { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; }
+  .status.paid { background: #d4edda; color: #155724; }
+  .status.unpaid { background: #fff3cd; color: #856404; }
+  .status.pending { background: #e2e3e5; color: #383d41; }
+  .status.urgent { background: #f8d7da; color: #721c24; }
+  .card-info { font-size: 0.85rem; color: #666; margin-top: 8px; }
+  .btn { width: 100%; margin-top: 12px; padding: 10px; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+  .btn-paid { background: #28a745; color: white; }
+  .btn-unpaid { background: #dc3545; color: white; }
+  .updated { text-align: center; font-size: 0.75rem; color: #999; margin-top: 16px; }
+</style>
+</head>
+<body>
+<h1>💳 信用卡繳費總覽</h1>
+<div id="app"></div>
+<div class="updated" id="updated"></div>
+
+<script>
+const CARDS = [
+  { name: "富邦",  bill_day: 20, due_day: 5,  due_next_month: true },
+  { name: "聯邦",  bill_day: 6,  due_day: 21, due_next_month: false },
+  { name: "國泰",  bill_day: 17, due_day: 2,  due_next_month: true },
+  { name: "台新",  bill_day: 17, due_day: 2,  due_next_month: true },
+  { name: "星展",  bill_day: 1,  due_day: 20, due_next_month: false },
+];
+
+function getMonthKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+}
+
+function loadStatus() {
+  try { return JSON.parse(localStorage.getItem('cc_status') || '{}'); }
+  catch { return {}; }
+}
+
+function saveStatus(s) {
+  localStorage.setItem('cc_status', JSON.stringify(s));
+}
+
+function getDueDate(card) {
+  const now = new Date();
+  if (card.due_next_month) {
+    return new Date(now.getFullYear(), now.getMonth()+1, card.due_day);
+  } else {
+    return ne
