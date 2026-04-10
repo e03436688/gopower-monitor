@@ -48,7 +48,7 @@ def check_stock():
     soup = BeautifulSoup(content, "html.parser")
     page_text = soup.get_text()
 
-    if SOLD_OUT_TEXT in page_text:
+    if SOLD_OUT_TEXT not in page_text:
         print("🔴 目前仍售完")
         # 報平安由 workflow 的 schedule 另外控制
     else:
