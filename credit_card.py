@@ -71,5 +71,4 @@ def check_cards():
             )
 
 if __name__ == "__main__":
-    send_line("🧪 測試訊息：信用卡提醒系統連線正常！")
     check_cards()
