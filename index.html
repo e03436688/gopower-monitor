@@ -55,4 +55,71 @@ function getDueDate(card) {
   if (card.due_next_month) {
     return new Date(now.getFullYear(), now.getMonth()+1, card.due_day);
   } else {
-    return ne
+    return new Date(now.getFullYear(), now.getMonth(), card.due_day);
+  }
+}
+
+function getBillDate(card) {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), card.bill_day);
+}
+
+function getCardStatus(card, paid) {
+  const now = new Date();
+  const billDate = getBillDate(card);
+  const billNotifyDate = new Date(billDate); billNotifyDate.setDate(billDate.getDate()+5);
+  const dueDate = getDueDate(card);
+  const diff = Math.ceil((dueDate - now) / (1000*60*60*24));
+
+  if (paid) return { label: "✅ 已繳費", cls: "paid" };
+  if (now < billNotifyDate) return { label: "🕐 帳單未出", cls: "pending" };
+  if (diff <= 1) return { label: "🚨 明天截止", cls: "urgent" };
+  if (diff <= 3) return { label: `⚠️ ${diff}天後截止`, cls: "urgent" };
+  return { label: "📄 待繳款", cls: "unpaid" };
+}
+
+function render() {
+  const status = loadStatus();
+  const monthKey = getMonthKey();
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  CARDS.forEach(card => {
+    const cardKey = `${monthKey}-${card.name}`;
+    const paid = status[cardKey] || false;
+    const st = getCardStatus(card, paid);
+    const dueDate = getDueDate(card);
+    const billDate = getBillDate(card);
+
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="card-header">
+        <span class="card-name">${card.name}</span>
+        <span class="status ${st.cls}">${st.label}</span>
+      </div>
+      <div class="card-info">
+        結帳日：每月 ${card.bill_day} 號 ｜
+        截止日：${dueDate.getMonth()+1}/${dueDate.getDate()}
+      </div>
+      <button class="btn ${paid ? 'btn-unpaid' : 'btn-paid'}" onclick="toggle('${cardKey}')">
+        ${paid ? '❌ 取消已繳' : '✅ 標記已繳'}
+      </button>
+    `;
+    app.appendChild(div);
+  });
+
+  document.getElementById('updated').textContent = '更新時間：' + new Date().toLocaleString('zh-TW');
+}
+
+function toggle(cardKey) {
+  const status = loadStatus();
+  status[cardKey] = !status[cardKey];
+  saveStatus(status);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
