@@ -2,16 +2,8 @@ name: 補貨監控
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # 每5分鐘掃一次
-    - cron: '0 0 * * *'     # 每天早上8點報平安 (UTC 0 = 台灣時間8:00)
-    - cron: '0 4 * * *'     # 每天中午12點報平安 (UTC 4 = 台灣時間12:00)
-    - cron: '0 10 * * *'    # 每天晚上6點報平安 (UTC 10 = 台灣時間18:00)
+    - cron: '*/5 * * * *'
   workflow_dispatch:
-    inputs:
-      mode:
-        description: '執行模式 (check 或 report)'
-        required: false
-        default: 'check'
 
 jobs:
   monitor:
@@ -27,23 +19,8 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4
 
-      - name: 決定執行模式
-        id: mode
-        run: |
-          HOUR=$(date -u +%H)
-          MIN=$(date -u +%M)
-          if [ "$HOUR" = "00" ] && [ "$MIN" -lt "10" ]; then
-            echo "mode=report" >> $GITHUB_OUTPUT
-          elif [ "$HOUR" = "04" ] && [ "$MIN" -lt "10" ]; then
-            echo "mode=report" >> $GITHUB_OUTPUT
-          elif [ "$HOUR" = "10" ] && [ "$MIN" -lt "10" ]; then
-            echo "mode=report" >> $GITHUB_OUTPUT
-          else
-            echo "mode=check" >> $GITHUB_OUTPUT
-          fi
-
       - name: 執行監控
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-        run: python check_stock.py ${{ steps.mode.outputs.mode }}
+        run: python check_stock.py check
