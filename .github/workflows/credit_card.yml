@@ -2,8 +2,8 @@ name: 信用卡繳費提醒
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 每天早上 9 點執行
-  workflow_dispatch:  # 允許手動觸發
+    - cron: '0 9 * * *'
+  workflow_dispatch:
 
 jobs:
   check-reminders:
