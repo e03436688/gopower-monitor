@@ -2,25 +2,24 @@ name: 信用卡繳費提醒
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # 每天台灣時間早上9點 (UTC+8)
-  workflow_dispatch:
+    - cron: '0 9 * * *'  # 每天早上 9 點執行
+  workflow_dispatch:  # 允許手動觸發
 
 jobs:
-  notify:
+  check-reminders:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
+      
       - name: Install dependencies
         run: pip install requests
-
-      - name: 執行信用卡提醒
+      
+      - name: Run reminders
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
-          LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
         run: python credit_card.py
