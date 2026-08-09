@@ -19,7 +19,7 @@ WATER_SOFTENER = {
     "salt": {
         "name": "🧂 軟水鹽包",
         "start_date": date(2026, 8, 22),  # 開始日期
-        "interval_days": 12,              # 每12天
+        "interval_days": 20,              # 每20天
     },
     "pp": {
         "name": "🔵 PP濾心",
